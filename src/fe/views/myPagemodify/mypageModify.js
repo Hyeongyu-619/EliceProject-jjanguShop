@@ -82,14 +82,21 @@ async function myPageModifyRender() {
     addressBtn.addEventListener('click', execDaumPostcode);
 
     const modifyBtn = document.querySelector('.modify-btn');
-    modifyBtn.addEventListener('click', () => {
-        if (confirm('회원 정보를 수정하시겠습니까?') == true) {
-            if (modifyUserInfo(role)) {
-                alert('회원 정보가 수정되었습니다.');
-                location.href = '/mypage/modify';
+    modifyBtn.addEventListener('click', async () => {
+        if (confirm('회원 정보를 수정하시겠습니까?')) {
+            try {
+                const isModified = await modifyUserInfo(role);
+                if (isModified) {
+                    alert('회원 정보가 수정되었습니다.');
+                    location.href = '/mypage/modify';
+                }
+            } catch (error) {
+                alert(error.message);
             }
         }
     });
+    
+    
 }
 
 myPageModifyRender();
@@ -156,7 +163,7 @@ async function modifyUserInfo(role) {
     const postalCode = document.querySelector('.postal-code').value;
     const phoneNum = document.querySelector('.number-input').value;
 
-    if (newPassword === checkNewPw) {
+    if (newPassword === checkNewPw ) {
         role = role === 'user' ? 'user' : 'admin';
 
         const response = await fetch('/api/user/my', {
@@ -176,12 +183,17 @@ async function modifyUserInfo(role) {
                 role: role,
             }),
         });
-
-        console.log(response);
-        return true;
+        if (response.ok) {
+            const updatedUserInfo = await response.json();
+            console.log(updatedUserInfo);
+            return true;
+        } else {
+            const errorData = await response.json();
+            console.error(errorData.error);
+            throw new Error('서버에서 에러가 발생했습니다: ' + errorData.error);
+        }
     } else {
-        alert('현재 패스워드가 일치하지 않습니다!');
-        return false;
+        throw new Error('현재 패스워드가 일치하지 않습니다!');
     }
 }
 

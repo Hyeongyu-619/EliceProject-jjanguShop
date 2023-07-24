@@ -75,7 +75,8 @@ userRouter.patch("/my", loginRequired, async function (req, res, next) {
     const currentPassword = req.body.currentPassword;
 
     // currentPassword 없을 시, 진행 불가
-    if (!currentPassword) {
+    if (password === currentPassword) {
+      console.log("비밀번호가 올바르지 않습니다.")
       throw new Error("정보를 변경하려면, 현재의 비밀번호가 필요합니다.");
     }
 
