@@ -127,18 +127,7 @@ class UserService {
 
     await userModel.deleteUser(userId);
   }
-  async getUserRoleById(userId) {
-    const user = await userModel.findUserById(userId);
-
-    if(!user) {
-      throw new Error(`${userId}를 가진 사용자가 존재하지 않습니다!`);
-    }
-    return user.role;
-  }
 }
-
-
-
 
 const userService = new UserService(userModel);
 

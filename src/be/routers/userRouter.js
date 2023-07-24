@@ -76,7 +76,7 @@ userRouter.patch("/my", loginRequired, async function (req, res, next) {
 
     // currentPassword 없을 시, 진행 불가
     if (password === currentPassword) {
-      console.log("비밀번호가 올바르지 않습니다.")
+      console.log("비밀번호가 올바르지 않습니다.");
       throw new Error("정보를 변경하려면, 현재의 비밀번호가 필요합니다.");
     }
 
@@ -145,18 +145,15 @@ userRouter.delete(
     }
   }
 );
-userRouter.post(
-  "/user/role",
+userRouter.get(
+  "/role",
   loginRequired,
-  async function (req, res, next) {
-    try {
-      const userId = req.params.userId;
-      await userService.getUserRoleById(userId)
-      res.status(204).end();
-    }catch(error) {
-      next(error);
-    }
-  }
-)
+  nextError(async (req, res, next) => {
+    const userId = req.currentUserId;
+    const user = await userService.findUserById(userId);
+
+    res.json(user.role);
+  })
+);
 
 export { userRouter };
