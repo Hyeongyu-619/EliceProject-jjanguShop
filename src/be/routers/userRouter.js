@@ -145,5 +145,18 @@ userRouter.delete(
     }
   }
 );
+userRouter.post(
+  "/user/role",
+  loginRequired,
+  async function (req, res, next) {
+    try {
+      const userId = req.params.userId;
+      await userService.getUserRoleById(userId)
+      res.status(204).end();
+    }catch(error) {
+      next(error);
+    }
+  }
+)
 
 export { userRouter };
